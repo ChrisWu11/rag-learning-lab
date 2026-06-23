@@ -1,4 +1,4 @@
-from backend.app.demos.sample_data import paper_chunks
+from backend.app.demos.pdf_document import parse_sample_pdf
 from backend.app.schemas import DemoResponse, DemoStep
 
 
@@ -10,17 +10,20 @@ def run(question: str, options: dict) -> DemoResponse:
         options: Reserved for future metadata filters such as year or section.
     """
 
-    chunks = paper_chunks()
+    parsed = parse_sample_pdf()
+    metadata = parsed["document_metadata"]
     citation_cards = [
         {
-            "visible_label": f"[{index}]",
-            "title": chunk["metadata"]["title"],
-            "doi": chunk["metadata"]["doi"],
-            "page": chunk["metadata"]["page"],
-            "section": chunk["metadata"]["section"],
-            "chunk_id": chunk["chunk_id"],
+            "visible_label": f"[{page['page']}]",
+            "title": metadata["title"],
+            "doi": metadata["doi"],
+            "year": metadata["year"],
+            "page": page["page"],
+            "section": page["section"],
+            "source_type": metadata["source_type"],
+            "source_path": metadata["source_path"],
         }
-        for index, chunk in enumerate(chunks, start=1)
+        for page in parsed["pages"]
     ]
 
     return DemoResponse(
@@ -31,14 +34,15 @@ def run(question: str, options: dict) -> DemoResponse:
             "section, and chunk ID makes answers auditable."
         ),
         steps=[
-            DemoStep(name="raw_private_papers", output=chunks),
+            DemoStep(name="pdf_file_info", output=parsed["pdf_info"]),
+            DemoStep(name="extracted_document_metadata", output=metadata),
             DemoStep(name="citation_cards", output=citation_cards),
         ],
         final_output={
             "why_it_matters": [
                 "Private papers can include institution-accessible content not visible to public chatbots.",
                 "Page and section metadata lets the system show where an answer came from.",
-                "Chunk IDs make retrieval and evaluation reproducible.",
+                "The same parsed metadata can be copied onto chunks during ingestion.",
             ]
         },
         interview_notes=[

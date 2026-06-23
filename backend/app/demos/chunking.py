@@ -1,4 +1,6 @@
-from backend.app.demos.sample_data import TOY_PAPERS
+from typing import Any
+
+from backend.app.demos.pdf_document import parse_sample_pdf
 from backend.app.schemas import DemoResponse, DemoStep
 
 
@@ -32,6 +34,47 @@ def make_chunks(text: str, chunk_size: int, overlap: int) -> list[dict]:
     return chunks
 
 
+def pdf_text_with_page_spans(parsed: dict[str, Any]) -> tuple[str, list[dict[str, Any]]]:
+    """Join PDF pages and keep character spans for page/section metadata.
+
+    Args:
+        parsed: Output from parse_sample_pdf().
+    """
+
+    text_parts = []
+    spans = []
+    cursor = 0
+    for page in parsed["pages"]:
+        page_text = page["clean_text"]
+        text_parts.append(page_text)
+        start = cursor
+        end = start + len(page_text)
+        spans.append(
+            {
+                "page": page["page"],
+                "section": page["section"],
+                "start_char": start,
+                "end_char": end,
+            }
+        )
+        cursor = end + 2
+    return "\n\n".join(text_parts), spans
+
+
+def overlapping_page_metadata(chunk: dict, page_spans: list[dict[str, Any]]) -> dict[str, Any]:
+    """Return PDF pages and sections touched by a chunk character span."""
+
+    touched = [
+        span
+        for span in page_spans
+        if chunk["start_char"] < span["end_char"] and chunk["end_char"] > span["start_char"]
+    ]
+    return {
+        "pages": [span["page"] for span in touched],
+        "sections": [span["section"] for span in touched],
+    }
+
+
 def run(question: str, options: dict) -> DemoResponse:
     """Run the chunking demo.
 
@@ -42,17 +85,21 @@ def run(question: str, options: dict) -> DemoResponse:
 
     chunk_size = int(options.get("chunk_size", 180))
     overlap = int(options.get("overlap", 40))
-    source = TOY_PAPERS[0]
-    text = f"{source['title']}. {source['text']}"
+    parsed = parse_sample_pdf()
+    metadata = parsed["document_metadata"]
+    text, page_spans = pdf_text_with_page_spans(parsed)
     chunks = make_chunks(text, chunk_size=chunk_size, overlap=overlap)
     enriched = [
         {
-            "chunk_id": f"{source['doc_id']}_c{chunk['chunk_index']:03d}",
+            "chunk_id": f"{metadata['doc_id']}_c{chunk['chunk_index']:03d}",
             **chunk,
             "metadata": {
-                "doi": source["doi"],
-                "page": source["page"],
-                "section": source["section"],
+                "title": metadata["title"],
+                "doi": metadata["doi"],
+                "year": metadata["year"],
+                "source_path": metadata["source_path"],
+                "page_count": metadata["page_count"],
+                **overlapping_page_metadata(chunk, page_spans),
             },
         }
         for chunk in chunks
@@ -66,6 +113,8 @@ def run(question: str, options: dict) -> DemoResponse:
             "context each unit contains; overlap reduces boundary information loss."
         ),
         steps=[
+            DemoStep(name="parsed_pdf_metadata", output=metadata),
+            DemoStep(name="page_character_spans", output=page_spans),
             DemoStep(name="source_text", output=text),
             DemoStep(name="chunking_options", output={"chunk_size": chunk_size, "overlap": overlap}),
             DemoStep(name="chunks_with_metadata", output=enriched),

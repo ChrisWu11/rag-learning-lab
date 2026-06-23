@@ -1,24 +1,5 @@
-import re
-
-from backend.app.demos.sample_data import SIMULATED_PDF_PAGES
+from backend.app.demos.pdf_document import parse_sample_pdf
 from backend.app.schemas import DemoResponse, DemoStep
-
-
-def detect_section(text: str) -> str:
-    """Detect a simple section label from page text."""
-
-    lowered = text.lower()
-    for section in ["abstract", "methods", "results", "discussion"]:
-        if section in lowered:
-            return section.title()
-    return "Unknown"
-
-
-def clean_text(text: str) -> str:
-    """Collapse PDF whitespace into readable text."""
-
-    compact = re.sub(r"\s+", " ", text)
-    return compact.strip()
 
 
 def run(question: str, options: dict) -> DemoResponse:
@@ -29,15 +10,15 @@ def run(question: str, options: dict) -> DemoResponse:
         options: Reserved for future parser switches such as OCR on/off.
     """
 
-    parsed_pages = []
-    for page in SIMULATED_PDF_PAGES:
-        parsed_pages.append(
-            {
-                "page": page["page"],
-                "section": detect_section(page["raw_text"]),
-                "clean_text": clean_text(page["raw_text"]),
-            }
-        )
+    parsed = parse_sample_pdf()
+    page_records = [
+        {
+            "page": page["page"],
+            "section": page["section"],
+            "clean_text": page["clean_text"],
+        }
+        for page in parsed["pages"]
+    ]
 
     return DemoResponse(
         demo_id="pdf_parsing",
@@ -47,13 +28,14 @@ def run(question: str, options: dict) -> DemoResponse:
             "page and section context for later citations."
         ),
         steps=[
-            DemoStep(name="simulated_pdf_pages", output=SIMULATED_PDF_PAGES),
-            DemoStep(name="cleaned_page_records", output=parsed_pages),
+            DemoStep(name="pdf_file_info", output=parsed["pdf_info"]),
+            DemoStep(name="extracted_page_text", output=parsed["pages"]),
+            DemoStep(name="cleaned_page_records", output=page_records),
         ],
         final_output={
             "parsed_document": {
-                "title": "Ultrasound-guided ablation monitoring",
-                "pages": parsed_pages,
+                **parsed["document_metadata"],
+                "pages": page_records,
             }
         },
         interview_notes=[

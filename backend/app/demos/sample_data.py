@@ -56,25 +56,6 @@ TOY_PAPERS = [
     },
 ]
 
-SIMULATED_PDF_PAGES = [
-    {
-        "page": 1,
-        "raw_text": (
-            "Title: Ultrasound-guided ablation monitoring\n"
-            "Abstract\n"
-            "Temperature monitoring is important during thermal ablation."
-        ),
-    },
-    {
-        "page": 2,
-        "raw_text": (
-            "Discussion\n"
-            "Ultrasound-based thermometry can use speed of sound and backscatter changes. "
-            "The method is sensitive to tissue state and acquisition settings."
-        ),
-    },
-]
-
 EVALUATION_SET = [
     {
         "question": "Which methods can monitor temperature during thermal ablation?",
