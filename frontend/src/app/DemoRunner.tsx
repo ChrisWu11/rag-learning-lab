@@ -14,6 +14,10 @@ interface DemoRunnerProps {
   summary: string;
   /** Initial textarea value. Pages can override this for targeted examples. */
   defaultQuestion?: string;
+  /** Whether this demo needs the user question textarea. */
+  showQuestion?: boolean;
+  /** Whether this demo needs the retrieval cutoff control. */
+  showTopK?: boolean;
   /** Whether to show chunk_size and overlap controls for the chunking page. */
   showChunkControls?: boolean;
 }
@@ -30,6 +34,8 @@ function DemoRunner({
   title,
   summary,
   defaultQuestion = "What temperature monitoring methods are used during thermal ablation?",
+  showQuestion = true,
+  showTopK = true,
   showChunkControls = false,
 }: DemoRunnerProps) {
   const [question, setQuestion] = useState(defaultQuestion);
@@ -74,49 +80,79 @@ function DemoRunner({
 
       <div className="demo-grid">
         <div className="demo-panel demo-panel--input">
-          <h3>Input</h3>
-          <label>
-            Question
-            <textarea value={question} onChange={(event) => setQuestion(event.target.value)} />
-          </label>
+          <h3>{showQuestion || showTopK || showChunkControls ? "Input" : "Action"}</h3>
+          {!showQuestion && !showTopK && !showChunkControls && (
+            <div className="no-input-card">
+              <strong>No user input required</strong>
+              <span>This demo reads fixed toy data from the backend so you can inspect the pipeline output directly.</span>
+            </div>
+          )}
 
-          <div className="control-row">
+          {showQuestion && (
             <label>
-              Top K
-              <input
-                min={1}
-                max={5}
-                type="number"
-                value={topK}
-                onChange={(event) => setTopK(Number(event.target.value))}
-              />
+              Question
+              <textarea value={question} onChange={(event) => setQuestion(event.target.value)} />
             </label>
+          )}
 
-            {showChunkControls && (
-              <>
+          {(showTopK || showChunkControls) && (
+            <div className={`control-row control-row--${Number(showTopK) + (showChunkControls ? 2 : 0)}`}>
+              {showTopK && (
                 <label>
-                  Chunk size
+                  Top K
                   <input
-                    min={80}
-                    max={800}
+                    min={1}
+                    max={5}
                     type="number"
-                    value={chunkSize}
-                    onChange={(event) => setChunkSize(Number(event.target.value))}
+                    value={topK}
+                    onChange={(event) => setTopK(Number(event.target.value))}
                   />
                 </label>
-                <label>
-                  Overlap
-                  <input
-                    min={0}
-                    max={200}
-                    type="number"
-                    value={overlap}
-                    onChange={(event) => setOverlap(Number(event.target.value))}
-                  />
-                </label>
-              </>
-            )}
-          </div>
+              )}
+
+              {showChunkControls && (
+                <>
+                  <label>
+                    Chunk size
+                    <input
+                      min={80}
+                      max={800}
+                      type="number"
+                      value={chunkSize}
+                      onChange={(event) => setChunkSize(Number(event.target.value))}
+                    />
+                  </label>
+                  <label>
+                    Overlap
+                    <input
+                      min={0}
+                      max={200}
+                      type="number"
+                      value={overlap}
+                      onChange={(event) => setOverlap(Number(event.target.value))}
+                    />
+                  </label>
+                </>
+              )}
+            </div>
+          )}
+
+          {showChunkControls && (
+            <div className="parameter-note">
+              <strong>Chunking parameters</strong>
+              <span>
+                Chunk size changes how much text is kept per retrieval unit; overlap repeats
+                boundary text between adjacent chunks.
+              </span>
+            </div>
+          )}
+
+          {demoId === "evaluation" && (
+            <div className="parameter-note">
+              <strong>Evaluation cutoff</strong>
+              <span>Top K changes how many retrieved chunks are counted by hit rate and MRR.</span>
+            </div>
+          )}
 
           <button className="primary-action" disabled={loading} onClick={handleRun}>
             {loading ? "Running..." : "Run Demo"}

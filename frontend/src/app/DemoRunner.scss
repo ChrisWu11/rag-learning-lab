@@ -98,8 +98,40 @@
 
 .control-row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+}
+
+.control-row--1 {
+  grid-template-columns: minmax(160px, 260px);
+}
+
+.control-row--2 {
+  grid-template-columns: repeat(2, minmax(160px, 1fr));
+}
+
+.control-row--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.no-input-card,
+.parameter-note {
+  display: grid;
+  gap: 6px;
+  border: 1px solid rgba(198, 156, 0, 0.35);
+  border-radius: 8px;
+  padding: 14px;
+  background: linear-gradient(135deg, rgba(198, 156, 0, 0.1), rgba(255, 255, 255, 0.72));
+}
+
+.no-input-card strong,
+.parameter-note strong {
+  color: $color-redbrick;
+}
+
+.no-input-card span,
+.parameter-note span {
+  color: $color-muted;
+  line-height: 1.45;
 }
 
 .primary-action {

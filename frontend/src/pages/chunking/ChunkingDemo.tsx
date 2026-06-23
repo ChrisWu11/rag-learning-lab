@@ -9,6 +9,8 @@ function ChunkingDemo() {
         eyebrow="03 Chunking"
         title="Control retrieval granularity."
         summary="Change chunk size and overlap to see how retrieval units are created."
+        showQuestion={false}
+        showTopK={false}
         showChunkControls
       />
     </div>
@@ -16,4 +18,3 @@ function ChunkingDemo() {
 }
 
 export default ChunkingDemo;
-

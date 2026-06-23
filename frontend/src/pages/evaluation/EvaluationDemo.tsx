@@ -9,10 +9,10 @@ function EvaluationDemo() {
         eyebrow="09 Evaluation"
         title="Do not judge RAG only by final answers."
         summary="Evaluate retrieval, reranking, generation faithfulness, and citation support separately."
+        showQuestion={false}
       />
     </div>
   );
 }
 
 export default EvaluationDemo;
-
