@@ -1,0 +1,74 @@
+@use "../../styles/variables" as *;
+
+.home-page {
+  display: grid;
+  gap: 20px;
+}
+
+.home-hero {
+  padding: 34px;
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(74, 16, 13, 0.96), rgba(122, 23, 18, 0.86)),
+    $color-redbrick-dark;
+  color: white;
+  box-shadow: $shadow-soft;
+}
+
+.home-hero p {
+  margin: 0 0 10px;
+  color: $color-gold;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.home-hero h2 {
+  max-width: 900px;
+  margin: 0;
+  font-size: clamp(2.4rem, 5vw, 4.8rem);
+  line-height: 1;
+}
+
+.home-hero span {
+  display: block;
+  max-width: 760px;
+  margin-top: 18px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
+  line-height: 1.55;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.home-card {
+  min-height: 150px;
+  border: 1px solid $color-line;
+  border-radius: 8px;
+  padding: 18px;
+  background: $color-panel;
+  text-align: left;
+}
+
+.home-card:hover {
+  border-color: $color-gold;
+  box-shadow: $shadow-soft;
+}
+
+.home-card strong {
+  display: block;
+  color: $color-redbrick;
+  font-size: 1.05rem;
+}
+
+.home-card span {
+  display: block;
+  margin-top: 10px;
+  color: $color-muted;
+  line-height: 1.45;
+}

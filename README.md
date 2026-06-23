@@ -1,0 +1,99 @@
+# RAG Learning Lab
+
+This project breaks the final Multimodal RAG system into small, debuggable demos.
+Each page focuses on one concept: corpus metadata, PDF parsing, chunking,
+embedding search, hybrid retrieval, reranking, grounded generation, image QA, and
+evaluation.
+
+The purpose is interview preparation. The code is intentionally small and
+explicit, so every step can be inspected in the browser and debugged in Python.
+
+## Stack
+
+- Backend: FastAPI + Python
+- Frontend: Vite + React + TypeScript + Sass
+- LLM: Gemini API, used only by the backend
+- Data: tiny scientific toy examples
+
+## Setup
+
+```bash
+cd /Users/apple/Desktop/project/rag-learning-lab
+
+python3.10 -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+
+cp .env.example .env
+# Add GEMINI_API_KEY to .env
+
+cd frontend
+npm install
+```
+
+## Run
+
+Backend:
+
+```bash
+cd /Users/apple/Desktop/project/rag-learning-lab
+source .venv/bin/activate
+uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8899
+```
+
+Or use the helper script:
+
+```bash
+./scripts/start_backend.sh
+```
+
+The helper script reads this project's `.env` first. If it does not exist, it can
+reuse the local Gemini settings from the final project at
+`/Users/apple/Desktop/UoB/Final-Project/multimodal-rag/.env`.
+
+Frontend:
+
+```bash
+cd /Users/apple/Desktop/project/rag-learning-lab/frontend
+npm run dev
+```
+
+Or:
+
+```bash
+./scripts/start_frontend.sh
+```
+
+Open:
+
+```text
+http://127.0.0.1:5173
+```
+
+## What To Debug
+
+Each demo returns a list of `steps`. Set breakpoints in the matching backend
+file under `backend/app/demos/`, then compare the Python variables with the
+intermediate JSON shown in the browser.
+
+## API
+
+```http
+GET /api/health
+GET /api/demos
+POST /api/demos/{demo_id}/run
+POST /api/demos/image_qa/run
+```
+
+Most demos accept:
+
+```json
+{
+  "question": "What temperature monitoring methods are used during thermal ablation?",
+  "options": {
+    "top_k": 3,
+    "chunk_size": 500,
+    "overlap": 80
+  }
+}
+```

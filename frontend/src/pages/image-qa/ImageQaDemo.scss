@@ -1,0 +1,175 @@
+@use "../../styles/variables" as *;
+
+.image-qa-page {
+  display: grid;
+  gap: 20px;
+}
+
+.image-qa-hero {
+  padding: 28px;
+  border: 1px solid $color-line;
+  border-radius: 10px;
+  background:
+    linear-gradient(90deg, rgba(29, 79, 145, 0.09), rgba(198, 156, 0, 0.1)),
+    $color-panel;
+  box-shadow: $shadow-soft;
+}
+
+.image-qa-hero p {
+  margin: 0 0 8px;
+  color: $color-redbrick;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.image-qa-hero h2 {
+  max-width: 980px;
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.3rem);
+  line-height: 1;
+}
+
+.image-qa-hero span {
+  display: block;
+  max-width: 820px;
+  margin-top: 14px;
+  color: $color-muted;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.image-qa-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.8fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.image-qa-panel {
+  border: 1px solid $color-line;
+  border-radius: 8px;
+  background: rgba(255, 250, 242, 0.84);
+  padding: 20px;
+}
+
+.image-qa-panel--input {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.image-qa-panel h3 {
+  margin: 0 0 16px;
+}
+
+.image-qa-panel p,
+.image-qa-panel li {
+  color: $color-muted;
+  line-height: 1.55;
+}
+
+.image-qa-panel label {
+  display: grid;
+  gap: 8px;
+  color: $color-muted;
+  font-weight: 800;
+}
+
+.image-qa-panel textarea,
+.image-qa-panel input {
+  width: 100%;
+  border: 1px solid $color-line;
+  border-radius: 8px;
+  background: white;
+  color: $color-ink;
+}
+
+.image-qa-panel textarea {
+  min-height: 128px;
+  padding: 12px;
+  resize: vertical;
+}
+
+.image-qa-panel input {
+  padding: 10px;
+}
+
+.image-preview {
+  display: grid;
+  gap: 8px;
+}
+
+.image-preview img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  border: 1px solid $color-line;
+  border-radius: 8px;
+  background: white;
+}
+
+.image-preview span {
+  color: $color-muted;
+  font-size: 0.9rem;
+}
+
+.image-qa-action {
+  border: none;
+  border-radius: 8px;
+  padding: 13px 18px;
+  background: $color-redbrick;
+  color: white;
+  font-weight: 900;
+}
+
+.image-qa-action:disabled {
+  opacity: 0.58;
+}
+
+.image-qa-error {
+  border-left: 4px solid $color-redbrick;
+  padding: 12px;
+  background: rgba(122, 23, 18, 0.08);
+  color: $color-redbrick;
+}
+
+.image-qa-output {
+  display: grid;
+  gap: 20px;
+}
+
+.image-step-list {
+  display: grid;
+  gap: 12px;
+}
+
+.image-qa-panel details {
+  border: 1px solid $color-line;
+  border-radius: 8px;
+  background: white;
+  overflow: hidden;
+}
+
+.image-qa-panel summary {
+  padding: 12px 14px;
+  background: rgba(29, 79, 145, 0.07);
+  color: $color-blue;
+  font-weight: 900;
+}
+
+.image-qa-panel pre {
+  max-height: 430px;
+  overflow: auto;
+  padding: 14px;
+  background: #171412;
+  color: #f8efe3;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .image-qa-grid {
+    grid-template-columns: 1fr;
+  }
+}
