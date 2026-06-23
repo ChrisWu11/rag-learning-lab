@@ -4,6 +4,13 @@ from backend.app.schemas import DemoResponse, DemoStep
 
 
 def run(question: str, options: dict) -> DemoResponse:
+    """Run the embedding and vector-search demo.
+
+    Args:
+        question: Query text that will be embedded and compared against chunk vectors.
+        options: Supports top_k, the number of highest-similarity chunks to return.
+    """
+
     chunks = paper_chunks()
     texts = [question] + [chunk["content"] for chunk in chunks]
     service = GeminiService()
@@ -12,6 +19,7 @@ def run(question: str, options: dict) -> DemoResponse:
         fallback=([fallback_embedding(text) for text in texts], {"provider": "local_fallback", "dimensions": 32}),
     )
     embeddings, model_info = vectors
+    # The first vector belongs to the query; the rest belong to the candidate chunks.
     query_vector = embeddings[0]
     chunk_vectors = embeddings[1:]
     scored = []
@@ -52,4 +60,3 @@ def run(question: str, options: dict) -> DemoResponse:
             "I do not show the full vector in the UI because the concept is similarity, not raw numbers.",
         ],
     )
-

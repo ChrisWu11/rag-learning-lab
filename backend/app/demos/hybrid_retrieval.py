@@ -10,6 +10,13 @@ from backend.app.schemas import DemoResponse, DemoStep
 
 
 def reciprocal_rank_fusion(rankings: list[list[str]], k: int = 60) -> dict[str, float]:
+    """Fuse multiple ranked lists without requiring comparable raw scores.
+
+    Args:
+        rankings: Each inner list contains chunk IDs ordered from best to worst.
+        k: Smoothing constant. Larger values reduce the impact of top ranks.
+    """
+
     scores: dict[str, float] = {}
     for ranking in rankings:
         for rank, chunk_id in enumerate(ranking, start=1):
@@ -18,6 +25,13 @@ def reciprocal_rank_fusion(rankings: list[list[str]], k: int = 60) -> dict[str, 
 
 
 def run(question: str, options: dict) -> DemoResponse:
+    """Run the hybrid retrieval demo.
+
+    Args:
+        question: User query used for both vector search and keyword scoring.
+        options: Supports top_k, the number of fused results shown in final_output.
+    """
+
     chunks = paper_chunks()
     service = GeminiService()
     texts = [question] + [chunk["content"] for chunk in chunks]
@@ -48,6 +62,8 @@ def run(question: str, options: dict) -> DemoResponse:
 
     vector_ranked = sorted(vector_results, key=lambda item: item["score"], reverse=True)
     keyword_ranked = sorted(keyword_results, key=lambda item: item["score"], reverse=True)
+    # RRF combines only rank positions, so vector and keyword scores do not need
+    # to share the same numeric scale.
     fusion_scores = reciprocal_rank_fusion(
         [[item["chunk_id"] for item in vector_ranked], [item["chunk_id"] for item in keyword_ranked]]
     )
@@ -81,4 +97,3 @@ def run(question: str, options: dict) -> DemoResponse:
             "RRF is a simple way to fuse rankings without needing both scores on the same scale.",
         ],
     )
-

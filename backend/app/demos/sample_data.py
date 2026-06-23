@@ -1,3 +1,5 @@
+# Tiny paper-like records used across the demos. The fields mirror the final
+# project's citation metadata, but the text is intentionally short for debugging.
 TOY_PAPERS = [
     {
         "doc_id": "paper_001",
@@ -93,6 +95,14 @@ EVALUATION_SET = [
 
 
 def paper_chunks() -> list[dict]:
+    """Convert toy papers into chunk records shared by retrieval demos.
+
+    Each returned chunk has:
+    - chunk_id: stable retrieval/evaluation identifier.
+    - content: text that can be embedded or keyword-scored.
+    - metadata: citation fields shown in evidence cards.
+    """
+
     chunks = []
     for paper in TOY_PAPERS:
         chunk = {
@@ -109,4 +119,3 @@ def paper_chunks() -> list[dict]:
         }
         chunks.append(chunk)
     return chunks
-

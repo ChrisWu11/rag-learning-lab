@@ -3,6 +3,14 @@ from backend.app.schemas import DemoResponse, DemoStep
 
 
 def make_chunks(text: str, chunk_size: int, overlap: int) -> list[dict]:
+    """Split text into overlapping character chunks.
+
+    Args:
+        text: Source document text to split.
+        chunk_size: Maximum number of characters in each chunk.
+        overlap: Number of characters repeated between adjacent chunks.
+    """
+
     chunks = []
     start = 0
     index = 1
@@ -25,6 +33,13 @@ def make_chunks(text: str, chunk_size: int, overlap: int) -> list[dict]:
 
 
 def run(question: str, options: dict) -> DemoResponse:
+    """Run the chunking demo.
+
+    Args:
+        question: Included for API consistency; this demo focuses on text splitting.
+        options: Supports chunk_size and overlap from the frontend controls.
+    """
+
     chunk_size = int(options.get("chunk_size", 180))
     overlap = int(options.get("overlap", 40))
     source = TOY_PAPERS[0]
@@ -64,4 +79,3 @@ def run(question: str, options: dict) -> DemoResponse:
             "Overlap protects information near chunk boundaries, but too much overlap adds duplicate evidence.",
         ],
     )
-

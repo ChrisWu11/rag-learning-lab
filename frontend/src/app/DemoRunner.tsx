@@ -4,15 +4,23 @@ import type { DemoId, DemoResponse } from "../types/demo";
 import "./DemoRunner.scss";
 
 interface DemoRunnerProps {
+  /** Backend demo identifier passed to runDemo(). */
   demoId: DemoId;
+  /** Small uppercase label above the page title. */
   eyebrow: string;
+  /** Main page title. */
   title: string;
+  /** One-sentence explanation shown in the hero area. */
   summary: string;
+  /** Initial textarea value. Pages can override this for targeted examples. */
   defaultQuestion?: string;
+  /** Whether to show chunk_size and overlap controls for the chunking page. */
   showChunkControls?: boolean;
 }
 
 function JsonBlock({ value }: { value: unknown }) {
+  /** Pretty-print backend JSON without guessing its shape. */
+
   return <pre>{JSON.stringify(value, null, 2)}</pre>;
 }
 
@@ -33,13 +41,17 @@ function DemoRunner({
   const [loading, setLoading] = useState(false);
 
   async function handleRun() {
+    /** Send current UI controls to the backend and store the demo response. */
+
     setLoading(true);
     setError("");
     try {
       const result = await runDemo(demoId, {
         question,
         options: {
+          // top_k is used by retrieval, reranking, generation, and evaluation demos.
           top_k: topK,
+          // These two controls are only read by the chunking demo.
           chunk_size: chunkSize,
           overlap,
         },
@@ -154,4 +166,3 @@ function DemoRunner({
 }
 
 export default DemoRunner;
-

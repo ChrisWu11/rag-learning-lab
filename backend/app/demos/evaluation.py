@@ -4,6 +4,13 @@ from backend.app.schemas import DemoResponse, DemoStep
 
 
 def reciprocal_rank(results: list[str], relevant_ids: list[str]) -> float:
+    """Return 1/rank for the first retrieved relevant chunk.
+
+    Args:
+        results: Retrieved chunk IDs ordered from best to worst.
+        relevant_ids: Ground-truth chunk IDs that should answer the question.
+    """
+
     for rank, chunk_id in enumerate(results, start=1):
         if chunk_id in relevant_ids:
             return 1 / rank
@@ -11,6 +18,13 @@ def reciprocal_rank(results: list[str], relevant_ids: list[str]) -> float:
 
 
 def run(question: str, options: dict) -> DemoResponse:
+    """Run the RAG evaluation demo.
+
+    Args:
+        question: Included for API consistency; evaluation uses its own labelled cases.
+        options: Supports top_k, which changes the retrieval cutoff used by metrics.
+    """
+
     top_k = int(options.get("top_k", 3))
     rows = []
     for case in EVALUATION_SET:
@@ -57,4 +71,3 @@ def run(question: str, options: dict) -> DemoResponse:
             "Retrieval metrics tell whether the system found evidence before judging answer wording.",
         ],
     )
-

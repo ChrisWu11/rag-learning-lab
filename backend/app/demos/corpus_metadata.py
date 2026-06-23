@@ -3,6 +3,13 @@ from backend.app.schemas import DemoResponse, DemoStep
 
 
 def run(question: str, options: dict) -> DemoResponse:
+    """Run the corpus metadata demo.
+
+    Args:
+        question: Included for API consistency; this demo inspects stored evidence.
+        options: Reserved for future metadata filters such as year or section.
+    """
+
     chunks = paper_chunks()
     citation_cards = [
         {
@@ -39,4 +46,3 @@ def run(question: str, options: dict) -> DemoResponse:
             "Metadata is essential for citation support and debugging wrong answers.",
         ],
     )
-

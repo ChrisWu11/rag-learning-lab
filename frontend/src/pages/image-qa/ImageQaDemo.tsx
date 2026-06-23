@@ -4,6 +4,8 @@ import type { DemoResponse } from "../../types/demo";
 import "./ImageQaDemo.scss";
 
 function JsonBlock({ value }: { value: unknown }) {
+  /** Pretty-print backend JSON for image QA intermediate steps. */
+
   return <pre>{JSON.stringify(value, null, 2)}</pre>;
 }
 
@@ -18,11 +20,14 @@ function ImageQaDemo() {
   const [loading, setLoading] = useState(false);
 
   const previewUrl = useMemo(() => {
+    // A browser object URL gives an immediate local preview without uploading yet.
     if (!image) return "";
     return URL.createObjectURL(image);
   }, [image]);
 
   async function handleRun() {
+    /** Upload the selected image and current controls to the backend image QA endpoint. */
+
     if (!image) {
       setError("Choose a PNG, JPEG, or WebP image first.");
       return;
@@ -128,4 +133,3 @@ function ImageQaDemo() {
 }
 
 export default ImageQaDemo;
-

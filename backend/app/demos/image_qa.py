@@ -8,6 +8,14 @@ ALLOWED_MIME_TYPES = {"image/png", "image/jpeg", "image/webp"}
 
 
 async def run_image_demo(question: str, image: UploadFile, options: dict) -> DemoResponse:
+    """Run the image-grounded RAG demo.
+
+    Args:
+        question: User question about the uploaded image and related literature.
+        image: Uploaded image file from the multipart request.
+        options: Supports top_k, which controls how many paper chunks are retrieved.
+    """
+
     image_bytes = await image.read()
     mime_type = image.content_type or "application/octet-stream"
     if mime_type not in ALLOWED_MIME_TYPES:
@@ -16,6 +24,7 @@ async def run_image_demo(question: str, image: UploadFile, options: dict) -> Dem
         raise ValueError("Image is too large for this learning demo. Use an image under 5 MB.")
 
     service = GeminiService()
+    # Step 1: convert the image into text so the normal text retriever can use it.
     image_summary, vision_status = safe_gemini_call(
         lambda: service.summarize_image(image_bytes, mime_type, question),
         fallback={
@@ -26,6 +35,7 @@ async def run_image_demo(question: str, image: UploadFile, options: dict) -> Dem
             "mime_type": mime_type,
         },
     )
+    # Step 2: combine user intent and visual observations into one retrieval query.
     expanded_query = f"{question}\n\nImage observations:\n{image_summary['text']}"
     evidence = select_evidence(expanded_query, int(options.get("top_k", 3)))
     prompt = (
@@ -67,4 +77,3 @@ async def run_image_demo(question: str, image: UploadFile, options: dict) -> Dem
             "The visual summary improves retrieval by adding image-derived terms to the query.",
         ],
     )
-

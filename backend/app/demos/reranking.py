@@ -5,6 +5,13 @@ from backend.app.schemas import DemoResponse, DemoStep
 
 
 def explainable_rerank_score(question: str, text: str) -> float:
+    """Score a query/chunk pair with visible logic for learning purposes.
+
+    Args:
+        question: User query.
+        text: Candidate chunk content from first-stage retrieval.
+    """
+
     base = keyword_score(question, text)
     query_terms = set(tokenize(question))
     text_terms = set(tokenize(text))
@@ -16,6 +23,13 @@ def explainable_rerank_score(question: str, text: str) -> float:
 
 
 def run(question: str, options: dict) -> DemoResponse:
+    """Run the reranking demo.
+
+    Args:
+        question: Query used to rescore the candidate chunks.
+        options: Supports top_k, the number of reranked candidates returned.
+    """
+
     chunks = paper_chunks()
     initial_scores = reciprocal_rank_fusion(
         [
@@ -32,6 +46,8 @@ def run(question: str, options: dict) -> DemoResponse:
         }
         for chunk in chunks
     ]
+    # The real project can replace this transparent score with a CrossEncoder.
+    # This version keeps the scoring easy to inspect while debugging.
     reranked = sorted(
         [
             {
@@ -62,4 +78,3 @@ def run(question: str, options: dict) -> DemoResponse:
             "In the final project, the same boundary can be replaced by a CrossEncoder reranker.",
         ],
     )
-

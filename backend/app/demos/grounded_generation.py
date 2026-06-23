@@ -5,6 +5,13 @@ from backend.app.schemas import DemoResponse, DemoStep
 
 
 def select_evidence(question: str, top_k: int) -> list[dict]:
+    """Select the top evidence chunks for a question.
+
+    Args:
+        question: User question or an expanded query from another demo.
+        top_k: Maximum number of evidence chunks passed into generation.
+    """
+
     scored = sorted(
         [
             {
@@ -23,6 +30,13 @@ def select_evidence(question: str, top_k: int) -> list[dict]:
 
 
 def build_prompt(question: str, evidence: list[dict]) -> str:
+    """Build the prompt that constrains Gemini to the retrieved evidence.
+
+    Args:
+        question: Original user question.
+        evidence: Retrieved chunks with content and citation metadata.
+    """
+
     evidence_block = "\n\n".join(
         (
             f"[{index}] {chunk['metadata']['title']} "
@@ -51,6 +65,8 @@ Evidence:
 
 
 def extractive_fallback(question: str, evidence: list[dict]) -> str:
+    """Return a simple evidence-based answer when Gemini generation is unavailable."""
+
     lines = [
         "Direct Answer",
         "The evidence describes ultrasound thermometry, spectral CT, MRI thermometry, and thermocouples as monitoring approaches during thermal ablation.",
@@ -74,6 +90,13 @@ def extractive_fallback(question: str, evidence: list[dict]) -> str:
 
 
 def run(question: str, options: dict) -> DemoResponse:
+    """Run the grounded generation demo.
+
+    Args:
+        question: User question shown in the frontend textarea.
+        options: Supports top_k, which controls how many evidence chunks enter the prompt.
+    """
+
     top_k = int(options.get("top_k", 3))
     evidence = select_evidence(question, top_k)
     prompt = build_prompt(question, evidence)
@@ -106,4 +129,3 @@ def run(question: str, options: dict) -> DemoResponse:
             "The prompt format separates direct answer, evidence, limitations, and sources.",
         ],
     )
-

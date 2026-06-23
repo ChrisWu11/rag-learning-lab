@@ -5,6 +5,8 @@ from backend.app.schemas import DemoResponse, DemoStep
 
 
 def detect_section(text: str) -> str:
+    """Detect a simple section label from page text."""
+
     lowered = text.lower()
     for section in ["abstract", "methods", "results", "discussion"]:
         if section in lowered:
@@ -13,11 +15,20 @@ def detect_section(text: str) -> str:
 
 
 def clean_text(text: str) -> str:
+    """Collapse PDF whitespace into readable text."""
+
     compact = re.sub(r"\s+", " ", text)
     return compact.strip()
 
 
 def run(question: str, options: dict) -> DemoResponse:
+    """Run the PDF parsing demo.
+
+    Args:
+        question: Included for API consistency; this demo focuses on page extraction.
+        options: Reserved for future parser switches such as OCR on/off.
+    """
+
     parsed_pages = []
     for page in SIMULATED_PDF_PAGES:
         parsed_pages.append(
@@ -50,4 +61,3 @@ def run(question: str, options: dict) -> DemoResponse:
             "The key is to preserve page-level context, because citations need page support.",
         ],
     )
-
